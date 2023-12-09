@@ -13,6 +13,6 @@ export class encrypt {
   }
 
   static generateToken(payload: string) {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: "1d" });
+    return jwt.sign({payload: payload}, JWT_SECRET, { expiresIn: "1h" });
   }
 }
