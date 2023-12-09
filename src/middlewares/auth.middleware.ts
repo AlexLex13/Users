@@ -16,10 +16,10 @@ export const authentication = (
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  const decode = jwt.verify(token, process.env.JWT_SECRET);
-  if (!decode) {
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  if (!decoded) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  req[" currentUser"] = decode;
+  req["currentUser"] = decoded;
   next();
 };
