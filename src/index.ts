@@ -3,11 +3,13 @@ import * as express from "express";
 import * as dotenv from "dotenv";
 import { Request, Response } from "express";
 import "reflect-metadata";
+import {errorHandler} from "./middlewares/error.middleware";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(errorHandler);
 const { PORT = 3000 } = process.env;
 
 app.get("*", (req: Request, res: Response) => {
