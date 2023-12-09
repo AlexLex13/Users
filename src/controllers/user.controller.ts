@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../data-source";
-import { User } from "../entity/User.entity";
+import { User } from "../entities/user.entity";
 import { encrypt } from "../helpers/encrypt";
 import * as cache from "memory-cache";
 
