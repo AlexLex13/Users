@@ -14,12 +14,17 @@ export class AuthController {
       }
 
       const userRepository = AppDataSource.getRepository(User);
-      const user = await userRepository.findOne({ where: { email } });
 
-      const isPasswordValid = encrypt.comparePass(user.password, password);
-      if (!user || !isPasswordValid) {
+      const user = await userRepository.findOne({ where: { email } });
+      if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
+
+      const isPasswordValid = encrypt.comparePass(user.password, password);
+      if (!isPasswordValid) {
+        return res.status(401).json({ message: "invalid password" });
+      }
+
       const token = encrypt.generateToken(user.id);
 
       return res.status(200).json({ message: "Login successful", user, token });
