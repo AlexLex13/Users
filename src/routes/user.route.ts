@@ -2,6 +2,7 @@ import * as express from "express";
 import { authentication } from "../middlewares/auth.middleware";
 import { UserController } from "../controllers/user.controller";
 import { AuthController } from "../controllers/auth.controller";
+import {FileController} from "../controllers/file.controller";
 const Router = express.Router();
 
 Router.get(
@@ -16,6 +17,7 @@ Router.get(
 );
 Router.post("/signup", UserController.signup);
 Router.post("/login", AuthController.login);
+Router.post("/upload/image", FileController.uploadImage);
 Router.put(
   "/update/:id",
   authentication,

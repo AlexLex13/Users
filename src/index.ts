@@ -1,7 +1,9 @@
 import { AppDataSource } from "./data-source";
 import * as express from "express";
+import * as cors from "cors";
 import * as dotenv from "dotenv";
 import { Request, Response } from "express";
+import * as fileUpload from "express-fileupload";
 import { userRouter } from "./routes/user.route";
 import "reflect-metadata";
 import {errorHandler} from "./middlewares/error.middleware";
@@ -9,6 +11,8 @@ import {errorHandler} from "./middlewares/error.middleware";
 dotenv.config();
 
 const app = express();
+app.use(cors());
+app.use(fileUpload());
 app.use(express.json());
 app.use(errorHandler);
 const { PORT = 3000 } = process.env;
