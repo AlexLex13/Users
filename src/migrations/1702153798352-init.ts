@@ -10,12 +10,13 @@ export class Init1702153798352 implements MigrationInterface {
             "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
             "firstName" character varying NOT NULL,
             "lastName" character varying,
-            "email" character varying NOT NULL,
+            "email" character varying UNIQUE NOT NULL,
             "password" character varying NOT NULL,
             "image"  character varying,
             "pdf" bytea,
-            CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id")
+            CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id");
           )
+          CREATE UNIQUE INDEX email_idx ON users (email);
           `
         )
     }
