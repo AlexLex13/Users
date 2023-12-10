@@ -49,9 +49,19 @@ export class UserController {
     const { id } = req.params;
     const { firstName, lastName, email, image } = req.body;
     const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOne({
-      where: { id },
-    });
+
+    let user: User;
+    try {
+      user = await userRepository.findOne({where: { id },});
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: err });
+    }
+
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
     user.firstName = firstName;
     user.lastName = lastName;
     user.email = email;
@@ -64,11 +74,21 @@ export class UserController {
   static async deleteUser(req: Request, res: Response) {
     const { id } = req.params;
     const userRepository = AppDataSource.getRepository(User);
-    const user = await userRepository.findOne({
-      where: { id },
-    });
+
+    let user: User;
+    try {
+      user = await userRepository.findOne({where: { id },});
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: err });
+    }
+
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
     await userRepository.remove(user);
-    res.status(200).json({ message: "ok" });
+    res.status(204);
   }
 
   static async createProfile(req: Request, res: Response) {
