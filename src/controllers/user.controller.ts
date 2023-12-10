@@ -3,6 +3,7 @@ import { AppDataSource } from "../data-source";
 import { User } from "../entities/user.entity";
 import { encrypt } from "../helpers/encrypt";
 import * as cache from "memory-cache";
+import {pdf} from "../helpers/pdf";
 
 export class UserController {
   static async signup(req: Request, res: Response) {
@@ -64,5 +65,29 @@ export class UserController {
     });
     await userRepository.remove(user);
     res.status(200).json({ message: "ok" });
+  }
+
+  static async createProfile(req: Request, res: Response) {
+    const { email } = req.body;
+    if (!email) {
+        return res.status(500).json({ message: "email required" });
+    }
+
+    const userRepository = AppDataSource.getRepository(User);
+
+    const user = await userRepository.findOne({ where: { email }, });
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    const result = await pdf.createPDF(user);
+    if (!result){
+      return res.status(500).json({ message: "Internal server error" });
+    }
+
+    user.pdf = result
+
+    await userRepository.save(user);
+    return res.status(200).json({ message: `The profile for the ${email} has been created!`});
   }
 }

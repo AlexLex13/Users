@@ -10,10 +10,10 @@ Router.get(
   authentication,
   UserController.getUsers
 );
-Router.get(
+Router.post(
   "/profile",
   authentication,
-  AuthController.getProfile
+  UserController.createProfile
 );
 Router.post("/signup", UserController.signup);
 Router.post("/login", AuthController.login);

@@ -25,5 +25,5 @@ export class User {
   image: string;
 
   @Column({ nullable: true, type: "bytea" })
-  pdf: Buffer;
+  pdf: Uint8Array;
 }
