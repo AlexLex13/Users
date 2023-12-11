@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import {Request, Response} from "express";
 import { AppDataSource } from "../data-source";
 import * as EmailValidator from 'email-validator';
 import { User } from "../entities/user.entity";
@@ -11,7 +11,8 @@ export class UserController {
     const { firstName, lastName, email, password, image } = req.body;
 
     if(!EmailValidator.validate(email)){
-      return res.status(500).json({ message: "invalid email" });
+      res.status(500).json({ message: "invalid email" });
+      return
     }
 
     const encryptedPassword = await encrypt.encryptPass(password);
@@ -25,24 +26,21 @@ export class UserController {
     const userRepository = AppDataSource.getRepository(User);
     await userRepository.save(user);
 
-    return res.status(200).json({ message: "User created successfully", user });
+    res.status(201).json({ message: "User created successfully", user });
   }
   static async getUsers(req: Request, res: Response) {
-    const data = cache.get("data");
-    if (data) {
+    const cache_users = cache.get("users");
+    if (cache_users) {
       console.log("serving from cache");
-      return res.status(200).json({
-        data,
-      });
+      res.status(200).json({data: cache_users});
+      return
     } else {
       console.log("serving from db");
       const userRepository = AppDataSource.getRepository(User);
       const users = await userRepository.find();
 
-      cache.put("data", users, 6000);
-      return res.status(200).json({
-        data: users,
-      });
+      cache.put("users", users, 6000);
+      res.status(200).json({data: users});
     }
   }
   static async updateUser(req: Request, res: Response) {
@@ -52,14 +50,16 @@ export class UserController {
 
     let user: User;
     try {
-      user = await userRepository.findOne({where: { id },});
+      user = await userRepository.findOne({where: { id }});
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: err });
+      res.status(500).json({ error: err });
+      return
     }
 
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: "User not found" });
+        return
     }
 
     user.firstName = firstName;
@@ -77,14 +77,16 @@ export class UserController {
 
     let user: User;
     try {
-      user = await userRepository.findOne({where: { id },});
+      user = await userRepository.findOne({where: { id }});
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: err });
+      res.status(500).json({ error: err });
+      return
     }
 
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: "User not found" });
+        return
     }
 
     await userRepository.remove(user);
@@ -94,24 +96,27 @@ export class UserController {
   static async createProfile(req: Request, res: Response) {
     const { email } = req.body;
     if (!email) {
-        return res.status(500).json({ message: "email required" });
+        res.status(500).json({ message: "email required" });
+        return
     }
 
     const userRepository = AppDataSource.getRepository(User);
 
-    const user = await userRepository.findOne({ where: { email }, });
+    const user = await userRepository.findOne({ where: { email }});
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        res.status(404).json({ message: "User not found" });
+        return
     }
 
     const result = await pdf.createPDF(user);
     if (!result){
-      return res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error" });
+      return
     }
 
     user.pdf = result
 
     await userRepository.save(user);
-    return res.status(200).json({ message: `The profile for the ${email} has been created!`});
+    res.status(200).json({ message: `The profile for the ${email} has been created!`});
   }
 }

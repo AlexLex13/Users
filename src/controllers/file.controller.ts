@@ -4,23 +4,26 @@ import {UploadedFile} from "express-fileupload";
 export class FileController {
   static async uploadImage(req: Request, res: Response) {
     if (!req.files) {
-        return res.status(500).send({ msg: "file is not found" })
+        res.status(500).send({ msg: "file is not found" })
+        return
     }
 
     const image = req.files.img as UploadedFile;
 
     if (image.mimetype != "image/png") {
-        return res.status(500).send({ msg: "invalid image format" })
+        res.status(500).send({ msg: "invalid image format" })
+        return
     }
 
     image.mv(`./static/images/${image.name}`,
         function (err: string) {
             if (err) {
                 console.log(err)
-                return res.status(500).send({ msg: "Error occurred" })
+                res.status(500).send({ msg: "Error occurred" })
+                return
             }
 
-            return res.send({name: image.name, path: `/${image.name}`});
+            res.send({name: image.name, path: `/${image.name}`});
         })
   }
 }
